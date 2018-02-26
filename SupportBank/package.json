@@ -1,0 +1,27 @@
+{
+  "name": "supportbank",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "log4js": "^2.4.1",
+    "moment": "^2.20.1",
+    "moment-msdate": "^2.0.1",
+    "readline-sync": "^1.4.7",
+    "xml2js-parser": "^1.1.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Thomas-Softwire/support-bank.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Thomas-Softwire/support-bank/issues"
+  },
+  "homepage": "https://github.com/Thomas-Softwire/support-bank#readme"
+}
