@@ -1,0 +1,26 @@
+{
+  "name": "07-libraries-and-package-management",
+  "version": "1.0.0",
+  "description": "",
+  "main": "exercise.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "gulp build",
+    "dev": "gulp dev"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^7.0.1",
+    "gulp-nodemon": "^2.2.1",
+    "readline": "^1.3.0",
+    "readline-sync": "^1.4.9",
+    "sharp": "^0.20.0"
+  },
+  "devDependencies": {
+    "mocha": "^5.0.1"
+  }
+}
