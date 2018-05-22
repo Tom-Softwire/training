@@ -2,6 +2,24 @@
 
 An example app to play around with React features.
 
+## Running tests
+
+Run `npm test`.
+
+## Running in development mode
+
+Run `npm start`.
+
+This will also watch for changes and recompile as necessary.
+
+## Running in production mode
+
+ - Run `npm build` to compile resources, then
+ - Run `npm run start-prod` with `NODE_ENV=production` to start the server.
+ 
+To debug in production mode, set `NODE_ENV=development` instead.
+
+Server-side rendering implemented with help from [Andrei Duca on medium.com](https://medium.com/bucharestjs/upgrading-a-create-react-app-project-to-a-ssr-code-splitting-setup-9da57df2040a).
 
 # React
 

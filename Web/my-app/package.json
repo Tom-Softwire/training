@@ -5,6 +5,12 @@
   "dependencies": {
     "@types/react-loadable": "^5.4.0",
     "@types/react-router-dom": "^4.2.6",
+    "babel-plugin-dynamic-import-node": "^1.2.0",
+    "babel-plugin-syntax-dynamic-import": "^6.18.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-register": "^6.26.0",
+    "express": "^4.16.3",
+    "ignore-styles": "^5.0.1",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
     "react-loadable": "^5.4.0",
@@ -13,6 +19,7 @@
   },
   "scripts": {
     "start": "react-scripts-ts start",
+    "start-prod": "node server/bootstrap.js",
     "build": "react-scripts-ts build",
     "test": "react-scripts-ts test --env=jsdom",
     "eject": "react-scripts-ts eject"

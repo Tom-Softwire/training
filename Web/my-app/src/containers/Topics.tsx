@@ -1,17 +1,19 @@
 import * as React from 'react';
-import * as Loadable from "react-loadable";
+import Loadable from "react-loadable";
 import {Route, RouteComponentProps, Switch} from "react-router";
 import {Link} from 'react-router-dom';
 import Loading from "./Loading";
 
 const TopicsHome = Loadable({
-    loader: () => import('./TopicsHome'),
+    loader: () => import(/* webpackChunkName: "topicsHome" */ './TopicsHome'),
     loading: Loading,
+    modules: ["topicsHome"],
     timeout: 5000
 });
 const Topic = Loadable({
-    loader: () => import('./Topic'),
+    loader: () => import(/* webpackChunkName: "topic" */ './Topic'),
     loading: Loading,
+    modules: ["topic"],
     timeout: 5000
 });
 

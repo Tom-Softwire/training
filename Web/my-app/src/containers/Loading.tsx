@@ -1,7 +1,6 @@
 import * as React from "react";
-import LoadingComponentProps = LoadableExport.LoadingComponentProps;
 
-const Loading = (props: LoadingComponentProps) => {
+const Loading = (props: LoadableExport.LoadingComponentProps) => {
     if (props.error) {
         return <h3>Could not load content. <button onClick={ props.retry }>Retry</button></h3>;
     } else if (props.timedOut) {
