@@ -4,23 +4,23 @@ import {Switch} from "react-router";
 import {Link, Route} from 'react-router-dom';
 import './App.css';
 
-import NotFound from "./err/NotFound";
-import Loading from './Loading';
+import NotFound from "./containers/err/NotFound";
+import Loading from './containers/Loading';
 
 const Home = Loadable({
-    loader: () => import(/* webpackChunkName: "home" */ './Home'),
+    loader: () => import(/* webpackChunkName: "home" */ './containers/Home'),
     loading: Loading,
     modules: ["home"],
     timeout: 5000
 });
 const About = Loadable({
-    loader: () => import(/* webpackChunkName: "about" */ './About'),
+    loader: () => import(/* webpackChunkName: "about" */ './containers/About'),
     loading: Loading,
     modules: ["about"],
     timeout: 5000
 });
 const Topics = Loadable({
-    loader: () => import(/* webpackChunkName: "topics" */ './Topics'),
+    loader: () => import(/* webpackChunkName: "topics" */ './containers/Topics'),
     loading: Loading,
     modules: ["topics"],
     timeout: 5000

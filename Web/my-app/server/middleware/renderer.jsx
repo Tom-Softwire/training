@@ -3,7 +3,7 @@ import ReactDOMServer from 'react-dom/server'
 import { StaticRouter } from 'react-router-dom';
 import Loadable from 'react-loadable';
 
-import App from '../../src/containers/App.tsx';
+import App from '../../src/App.tsx';
 
 import manifest from '../../build/asset-manifest.json';
 const extractAssets = (assets, chunks) => Object.keys(assets)

@@ -1,4 +1,5 @@
 import express from 'express';
+const compression = require('compression');
 
 import serverRenderer from './middleware/renderer';
 import * as Loadable from "react-loadable";
@@ -8,6 +9,8 @@ const path = require('path');
 
 const app = express();
 const router = express.Router();
+
+app.use(compression());
 
 // root (/) should always serve our server rendered page
 router.use('^/$', serverRenderer);
