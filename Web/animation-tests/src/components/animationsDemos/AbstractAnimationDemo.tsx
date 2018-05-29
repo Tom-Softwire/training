@@ -1,7 +1,7 @@
 import * as React from "react";
 
 export interface IAnimationDemoProps {
-    playOnMount: boolean
+    autoplay: boolean
 }
 
 type timestamp = number;
@@ -18,6 +18,16 @@ export default abstract class AnimationDemo extends React.Component<IAnimationDe
     private lastTickTime: number;
     private isPlaying: boolean;
 
+    public componentDidMount() {
+        if (this.props.autoplay) {
+            this.play();
+        }
+    }
+
+    public componentWillUnmount() {
+        this.stop();
+    }
+
     public play() {
         this.totalPlayTime = 0;
         this.isPlaying = true;
@@ -25,27 +35,32 @@ export default abstract class AnimationDemo extends React.Component<IAnimationDe
     }
 
     public stop() {
-        this.reset();
         this.isPlaying = false;
+        this.reset();
     }
 
     protected abstract reset(): void;
     protected abstract animationTick(details: IAnimationTickInstanceDetails): void;
 
-    private doRecursiveTickWhilePlaying() {
+    private async doRecursiveTickWhilePlaying() {
         if (this.isPlaying) {
-            this.performTick().then(() => this.doRecursiveTickWhilePlaying());
+            this.performTick();
+            await this.tickDelay();
+            this.doRecursiveTickWhilePlaying();
         }
     }
 
-    private performTick(): Promise<boolean> {
+    private tickDelay(): Promise<boolean> {
         return new Promise<boolean>(resolve => {
-            const animationTickInstanceDetails = this.recalculateTickInstanceDetailsForNow();
-            this.animationTick(animationTickInstanceDetails);
             setTimeout(() => {
                 resolve(true);
-            }, 20);
+            }, 15);
         });
+    }
+
+    private performTick(): void {
+        const animationTickInstanceDetails = this.recalculateTickInstanceDetailsForNow();
+        this.animationTick(animationTickInstanceDetails);
     }
 
     private recalculateTickInstanceDetailsForNow(): IAnimationTickInstanceDetails {

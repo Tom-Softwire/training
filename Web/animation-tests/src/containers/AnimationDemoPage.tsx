@@ -29,8 +29,8 @@ class AnimationDemoPage extends React.Component<IAnimationDemoPageProps, {}> {
 
         return (
             <>
-                {/*<h2>{AnimationDemoType.displayName}</h2>*/}
-                <AnimationDemoType playOnMount={true} />
+                {<p>{AnimationDemoType.displayName}</p>}
+                <AnimationDemoType autoplay={true} />
             </>
         );
     }

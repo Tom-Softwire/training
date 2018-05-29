@@ -1,0 +1,45 @@
+.loading-animation svg {
+    width: 100px;
+    height: 100px;
+    shape-rendering: geometricPrecision;
+}
+
+@keyframes loading-animation-circle-position {
+    0% {
+        transform: rotate(0);
+    }
+    50% {
+        transform: rotate(180deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes loading-animation-circle-fill {
+    0% {
+        fill: rgb(159, 159, 159);
+    }
+    50% {
+        fill: rgb(95, 95, 95);
+    }
+    100% {
+        fill: rgb(159, 159, 159);
+    }
+}
+
+.loading-animation .slow-circle,
+.loading-animation .fast-circle {
+    transform-origin: 50px 50px;
+    animation: loading-animation-circle-position linear, loading-animation-circle-fill cubic-bezier(.79,.14,.15,.86);
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+.loading-animation .slow-circle {
+    animation-duration: 1.36s;
+}
+
+.loading-animation .fast-circle {
+    animation-duration: 850ms;
+}

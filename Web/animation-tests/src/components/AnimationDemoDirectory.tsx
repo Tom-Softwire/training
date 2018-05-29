@@ -1,10 +1,10 @@
 import AnimationDemo from "./animationsDemos/AbstractAnimationDemo";
-import TestAnimation from "./animationsDemos/TestAnimation";
+import LoadingAnimationDemo from "./animationsDemos/LoadingAnimationDemo";
 
 interface IAnimationDemosByName {[urlKey: string]: typeof AnimationDemo}
 
 const animationDemosByName: IAnimationDemosByName = {
-    testAnimation: TestAnimation
+    testAnimation: LoadingAnimationDemo
 };
 
 abstract class AnimationDemoDirectory {
