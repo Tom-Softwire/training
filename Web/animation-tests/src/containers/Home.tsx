@@ -6,9 +6,15 @@ class Home extends React.Component {
         return (
             <>
                 <h2>Home</h2>
-                <Link to="/animation/">
-                    Animation Demos
-                </Link>
+
+                <ul>
+                    <li>
+                        <Link to="/animation/">Animation Demos</Link>
+                    </li>
+                    <li>
+                        <Link to="/visualiser/">Music Visualiser Demo</Link>
+                    </li>
+                </ul>
             </>
         );
     }

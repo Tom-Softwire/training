@@ -1,0 +1,16 @@
+.playerWithVisualiser {
+    display: inline-block;
+    margin: 20px auto;
+}
+
+.playerWithVisualiser .visualiser {
+    padding: 0 10px;
+    background: #f6f6f6;
+    border: 1px solid #eee;
+    border-radius: 10px 10px 0 0;
+}
+
+/* TODO tidy this up */
+.playerWithVisualiser audio {
+    width: 100%;
+}
