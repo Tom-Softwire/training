@@ -7,16 +7,12 @@ export type IAbstractVisualiserProps = React.CanvasHTMLAttributes<HTMLCanvasElem
 }
 
 abstract class AbstractVisualiser extends React.Component<IAbstractVisualiserProps, {}> {
-    private canvas: RefObject<HTMLCanvasElement>;
+    private readonly canvas: RefObject<HTMLCanvasElement>;
 
     protected constructor(props: IAbstractVisualiserProps) {
         super(props);
 
         this.canvas = React.createRef<HTMLCanvasElement>();
-
-        this.state = {
-            data: new Uint8Array(0)
-        };
     }
 
     public componentDidMount() {
@@ -25,7 +21,7 @@ abstract class AbstractVisualiser extends React.Component<IAbstractVisualiserPro
 
     public shouldComponentUpdate({data}: IAbstractVisualiserProps): boolean {
         requestAnimationFrame(() => this.tryDraw());
-        return false; // do not induce another render - all visual changes are done through tryDraw()
+        return false; // do not allow calls to render() - all visual changes are done through tryDraw()
     }
 
     public render() {
@@ -36,10 +32,6 @@ abstract class AbstractVisualiser extends React.Component<IAbstractVisualiserPro
     }
 
     protected abstract tryDraw(): void;
-    
-    protected getCanvasRef(): RefObject<HTMLCanvasElement> {
-        return this.canvas;
-    }
 
     protected getCanvasContext2D(): CanvasRenderingContext2D {
         const canvasContext: CanvasRenderingContext2D | null

@@ -1,39 +1,34 @@
 import * as React from 'react';
 import {RefObject} from "react";
 
-import MisconfiguredAnalyserError from "./util/MisconfiguredAnalyserError";
 import './VisualisedAudioElement.css';
 
 import {ITrackType} from "./data/tracks";
 import {IVisualiserType} from "./data/visualisers";
+import FrequencyAnalyser from "./util/FrequencyAnalyser";
+import FrequencyNormaliser, {FrequencyNormaliserMode} from "./util/FrequencyNormaliser";
+
+export type IRawFrequencyData = Uint8Array;
+export type INormalisedFrequencyData = Uint8Array;
 
 interface IVisualisedAudioElementProps {
     track: ITrackType | null,
     visualiser: IVisualiserType
 }
 interface IVisualisedAudioElementState {
-    normalisedFrequencyData: Uint8Array
+    normalisedFrequencyData: INormalisedFrequencyData
 }
 
-export type INormalisedFrequencyData = Uint8Array;
-
-// TODO Extract the frequency-parsing logic into a FrequencyParser class, or similar, to which the visualiser subscribes
 class VisualisedAudioElement extends React.PureComponent<IVisualisedAudioElementProps, IVisualisedAudioElementState> {
-    private audioContext: AudioContext;
-    private audioElement: RefObject<HTMLAudioElement>;
+    private readonly audioContext: AudioContext;
+    private readonly audioElement: RefObject<HTMLAudioElement>;
 
-    private currentAudioSource: MediaElementAudioSourceNode;
-    private currentAnalyser: AnalyserNode;
-
-    private currentRawFrequencyData: Uint8Array;
-
-    private isPlaying = true; // this should be moved out of here
+    private frequencyAnalyser: FrequencyAnalyser;
 
     constructor(props: IVisualisedAudioElementProps) {
         super(props);
 
-        const AudioContext = ((window as any).AudioContext || (window as any).webkitAudioContext);
-        this.audioContext = new AudioContext();
+        this.audioContext = this.createAudioContext();
         this.audioElement = React.createRef<HTMLAudioElement>();
 
         this.state = {
@@ -43,14 +38,14 @@ class VisualisedAudioElement extends React.PureComponent<IVisualisedAudioElement
 
     public componentDidMount() {
         try {
-            this.setup();
+            this.setUp();
         } catch (e) {
             return;
         }
     }
 
     public componentWillUnmount() {
-        this.isPlaying = false;
+        this.frequencyAnalyser.stop();
     }
 
     public render() {
@@ -66,73 +61,51 @@ class VisualisedAudioElement extends React.PureComponent<IVisualisedAudioElement
         );
     }
 
-    private setup() {
-        this.connectAudioElementAsAudioSource();
-        this.recursivelyRefreshDataWhilePlaying();
+    private createAudioContext(): AudioContext {
+        const AudioContext = ((window as any).webkitAudioContext || (window as any).AudioContext);
+        if (!AudioContext) {
+            throw new Error('Audio Context not supported.');
+        }
+        return new AudioContext();
     }
 
-    private connectAudioElementAsAudioSource() {
+    private setUp() {
+        this.frequencyAnalyser = this.setUpFrequencyProcessor();
+        this.frequencyAnalyser.start();
+    }
+
+    private setUpFrequencyProcessor(): FrequencyAnalyser {
+        const frequencyProcessor = new FrequencyAnalyser(this.audioContext);
+
+        frequencyProcessor.setAudioSource(this.getAudioElement());
+        frequencyProcessor.setFrequencyDataChangedCallback(this.frequencyDataChanged.bind(this));
+
+        return frequencyProcessor;
+    }
+
+    private getAudioElement(): HTMLAudioElement {
         const audioElementInstance = this.audioElement.current;
         if (!audioElementInstance) {
-            throw new Error('Could not connect to audio element');
+            throw new Error('Could not get current audio element');
         }
 
-        this.currentAudioSource = this.audioContext.createMediaElementSource(audioElementInstance);
-        this.currentAnalyser = this.setupAnalyser(this.audioContext);
-
-        this.currentAudioSource.connect(this.currentAnalyser);
-        this.currentAudioSource.connect(this.audioContext.destination); // output to system out directly
-
-        this.currentRawFrequencyData = new Uint8Array(this.currentAnalyser.frequencyBinCount); // placeholder for incoming data
+        return audioElementInstance;
     }
 
-    private setupAnalyser(audioContext: AudioContext): AnalyserNode {
-        const analyser = audioContext.createAnalyser();
-        analyser.smoothingTimeConstant = 0.8;
-        analyser.fftSize = 1024;
-        return analyser;
+    private frequencyDataChanged(data: IRawFrequencyData): void {
+        this.setState({
+            normalisedFrequencyData: this.normaliseRawFrequencyData(data)
+        });
     }
 
-    private recursivelyRefreshDataWhilePlaying() {
-        if (this.isPlaying) {
-            // attempt to sync data updates with screen refresh cycle
-            requestAnimationFrame(() => this.recursivelyRefreshDataWhilePlaying());
-        }
-        this.refreshFrequencyData();
-    }
+    private normaliseRawFrequencyData(rawFrequencyData: IRawFrequencyData): INormalisedFrequencyData {
+        const normaliser = new FrequencyNormaliser();
 
-    private refreshFrequencyData() {
-        const normalisedFrequencyData = this.getCurrentNormalisedFrequencyData();
-        this.setState({normalisedFrequencyData});
-    }
+        normaliser.setRawData(rawFrequencyData);
+        normaliser.setMode(FrequencyNormaliserMode.EqualWidthBins);
+        normaliser.setTargetNumberOfBins(12); // TODO abstract away into, say, visualiser props
 
-    private getCurrentNormalisedFrequencyData(): INormalisedFrequencyData {
-        this.currentAnalyser.getByteFrequencyData(this.currentRawFrequencyData);
-        return this.normaliseFrequencyData(this.currentRawFrequencyData);
-    }
-
-    private normaliseFrequencyData(rawFrequencyData: Uint8Array): INormalisedFrequencyData {
-        const numberOfRawDataPoints = rawFrequencyData.length;
-        const targetNumberOfDataPoints = 12; // TODO abstract away into, say, visualiser props
-
-        if (numberOfRawDataPoints === targetNumberOfDataPoints) { // shortcut
-            return rawFrequencyData;
-        }
-
-        if (numberOfRawDataPoints < targetNumberOfDataPoints) {
-            throw new MisconfiguredAnalyserError('Not enough data points. Try increasing AnalyserNode.fftSize');
-        }
-
-        const reductionFactor = numberOfRawDataPoints / targetNumberOfDataPoints;
-
-        const averagesOverRawData = new Uint8Array(targetNumberOfDataPoints);
-        rawFrequencyData.forEach(((rawDataPoint, indexOfRawDataPoint) => {
-            const targetIndex = Math.floor(indexOfRawDataPoint / reductionFactor);
-            // FIXME This is not a genuine average, since it assumes that there are reductionFactor items to average
-            averagesOverRawData[targetIndex] += rawDataPoint / reductionFactor;
-        }));
-
-        return averagesOverRawData;
+        return normaliser.generateNormalisedData();
     }
 }
 
