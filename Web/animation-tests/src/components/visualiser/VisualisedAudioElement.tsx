@@ -52,8 +52,8 @@ class VisualisedAudioElement extends React.PureComponent<IVisualisedAudioElement
         const VisualiserComponent = this.props.visualiser.component;
 
         return (
-            <div>
-                <VisualiserComponent data={this.state.normalisedFrequencyData} width={512} height={256} />
+            <div className="visualised-audio-element">
+                <VisualiserComponent data={this.state.normalisedFrequencyData} width={250} height={154} />
                 <audio ref={this.audioElement} controls={true} src={this.props.track ? this.props.track.filename : ''}>
                     No support!
                 </audio>

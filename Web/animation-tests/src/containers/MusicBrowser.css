@@ -1,0 +1,29 @@
+.music-browser {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap-reverse;
+    width: 750px;
+    margin: 0 auto;
+    max-width: 100%;
+}
+
+.music-browser .browser {
+    max-width: 100%;
+    flex: 1 0 250px;
+}
+
+.music-browser .player {
+    max-width: 100%;
+    flex: 1 0 250px;
+}
+
+.music-browser .list {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+}
+
+.music-browser .list-attribution {
+    color: #555;
+    font-size: 0.8em;
+}

@@ -7,6 +7,7 @@ import Header from "./components/Header";
 import AnimationDemoHome from "./containers/AnimationDemoHome";
 import AnimationDemoPage from "./containers/AnimationDemoPage";
 import Home from "./containers/Home";
+import MusicBrowser from "./containers/MusicBrowser";
 import NotFound from "./containers/NotFound";
 import VisualiserDemo from "./containers/VisualiserDemo";
 
@@ -20,6 +21,8 @@ class App extends React.Component {
 
                     <Route exact={true} path="/animation/" component={AnimationDemoHome} />
                     <Route path="/animation/:animationName" component={AnimationDemoPage} />
+
+                    <Route exact={true} path="/music-browser/" component={MusicBrowser} />
 
                     <Route exact={true} path="/visualiser/" component={VisualiserDemo} />
 

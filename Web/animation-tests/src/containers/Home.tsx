@@ -14,6 +14,9 @@ class Home extends React.Component {
                     <li>
                         <Link to="/visualiser/">Music Visualiser Demo</Link>
                     </li>
+                    <li>
+                        <Link to="/music-browser/">Music Browser</Link>
+                    </li>
                 </ul>
             </>
         );

@@ -1,4 +1,10 @@
-.visualiser {
-    display: flex;
-    align-items: end;
+.visualised-audio-element {
+    display: inline-flex;
+    width: 250px;
+    flex-direction: column;
+    flex-wrap: nowrap;
+}
+
+.visualised-audio-element canvas {
+    flex: 0 0 auto;
 }
