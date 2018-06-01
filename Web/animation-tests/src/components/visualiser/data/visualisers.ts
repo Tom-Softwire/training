@@ -1,6 +1,6 @@
 import AbstractVisualiser from "../components/AbstractVisualiser";
 
-import BlueVisualiserBars from "../components/BlueVisualiserBars";
+import ShapesVisualiser from "../components/ShapesVisualiser";
 import VisualiserBars from "../components/VisualiserBars";
 
 export interface IVisualiserType {
@@ -11,12 +11,12 @@ export interface IVisualiserType {
 const visualisers: IVisualiserType[] = [
     {
         component: VisualiserBars,
-        name: 'Default Bars',
+        name: 'Bars',
     },
     {
-        component: BlueVisualiserBars,
-        name: 'Blue Bars',
-    }
+        component: ShapesVisualiser,
+        name: 'Shapes',
+    },
 ];
 
 export default visualisers;
