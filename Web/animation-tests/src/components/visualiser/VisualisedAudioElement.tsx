@@ -3,7 +3,7 @@ import {RefObject} from "react";
 
 import './VisualisedAudioElement.css';
 
-import {ITrackType} from "./data/tracks";
+import {ITrackType} from "./data/tracksRepository";
 import {IVisualiserType} from "./data/visualisers";
 import FrequencyAnalyser from "./util/FrequencyAnalyser";
 import FrequencyNormaliser, {FrequencyNormaliserMode} from "./util/FrequencyNormaliser";
@@ -12,8 +12,9 @@ export type IRawFrequencyData = Uint8Array;
 export type INormalisedFrequencyData = Uint8Array;
 
 interface IVisualisedAudioElementProps {
+    shouldPlay: boolean,
     track: ITrackType | null,
-    visualiser: IVisualiserType
+    visualiser: IVisualiserType,
 }
 interface IVisualisedAudioElementState {
     normalisedFrequencyData: INormalisedFrequencyData
@@ -54,7 +55,10 @@ class VisualisedAudioElement extends React.PureComponent<IVisualisedAudioElement
         return (
             <div className="visualised-audio-element">
                 <VisualiserComponent data={this.state.normalisedFrequencyData} width={250} height={154} />
-                <audio ref={this.audioElement} controls={true} src={this.props.track ? this.props.track.filename : ''}>
+                <audio ref={this.audioElement}
+                       controls={true}
+                       src={this.props.track ? this.props.track.filename : ''}
+                       autoPlay={this.props.shouldPlay}>
                     No support!
                 </audio>
             </div>
@@ -103,7 +107,7 @@ class VisualisedAudioElement extends React.PureComponent<IVisualisedAudioElement
 
         normaliser.setRawData(rawFrequencyData);
         normaliser.setMode(FrequencyNormaliserMode.EqualWidthBins);
-        normaliser.setTargetNumberOfBins(12); // TODO abstract away into, say, visualiser props
+        normaliser.setTargetNumberOfBins(this.props.visualiser.component.minNumberOfFrequencyDataBins);
 
         return normaliser.generateNormalisedData();
     }

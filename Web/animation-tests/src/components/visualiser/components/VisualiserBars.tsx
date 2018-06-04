@@ -2,6 +2,9 @@ import {INormalisedFrequencyData} from "../VisualisedAudioElement";
 import AbstractVisualiser from "./AbstractVisualiser";
 
 class VisualiserBars extends AbstractVisualiser {
+    public static get minNumberOfFrequencyDataBins(): number {
+        return 12;
+    }
 
     // TODO move this to abstract class - determine the 2d/webgl option through a readonly class property
     protected tryDraw() {

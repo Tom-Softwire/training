@@ -3,10 +3,11 @@ import {ReactElement} from "react";
 
 import VisualisedAudioElement from "../components/visualiser/VisualisedAudioElement";
 
-import {default as tracks, ITrackType} from "../components/visualiser/data/tracks";
 import {default as visualisers, IVisualiserType} from "../components/visualiser/data/visualisers";
 
 import Header from "../components/Header";
+import BasicTrackStore from "../components/visualiser/data/BasicTrackStore";
+import {default as allTracks, ITrackType} from "../components/visualiser/data/tracksRepository";
 import './VisualiserDemo.css';
 
 interface IVisualiserDemoState {
@@ -15,9 +16,12 @@ interface IVisualiserDemoState {
 }
 
 class VisualiserDemo extends React.PureComponent<{}, IVisualiserDemoState> {
+    private trackStore: BasicTrackStore;
 
     constructor() {
         super({});
+
+        this.trackStore = new BasicTrackStore(allTracks);
 
         this.state = {
             track: null,
@@ -40,7 +44,8 @@ class VisualiserDemo extends React.PureComponent<{}, IVisualiserDemoState> {
                                 `No track selected`}
                         </h3>
                         <VisualisedAudioElement track={this.state.track}
-                                                visualiser={this.state.visualiser} />
+                                                visualiser={this.state.visualiser}
+                                                shouldPlay={false}/>
                     </div>
                     <div>
                         <h4>Visualiser</h4>
@@ -72,10 +77,10 @@ class VisualiserDemo extends React.PureComponent<{}, IVisualiserDemoState> {
     }
 
     private renderTrackButtons(): Array<ReactElement<HTMLButtonElement>> {
-        return tracks.map((trackOption: ITrackType, index: number) => (
+        return this.trackStore.getAllAsArray().map((trackOption: ITrackType) => (
             // tslint:disable-next-line jsx-no-lambda
             <button onClick={() => this.setTrack(trackOption)}
-                    key={index}
+                    key={trackOption.id}
                     disabled={this.state.track === trackOption}>
                 {trackOption.name}
                 </button>

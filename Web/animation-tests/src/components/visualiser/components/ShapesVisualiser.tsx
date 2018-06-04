@@ -5,6 +5,10 @@ import AbstractVisualiser, {IAbstractVisualiserProps} from "./AbstractVisualiser
 type ITestVisualiserProps = IAbstractVisualiserProps;
 
 class ShapesVisualiser extends AbstractVisualiser {
+    public static get minNumberOfFrequencyDataBins(): number {
+        return 12;
+    }
+
     private lastDrawTime: number; // milliseconds
     private lastDrawData: INormalisedFrequencyData;
 

@@ -7,6 +7,10 @@ export type IAbstractVisualiserProps = React.CanvasHTMLAttributes<HTMLCanvasElem
 }
 
 abstract class AbstractVisualiser extends React.Component<IAbstractVisualiserProps, {}> {
+    public static get minNumberOfFrequencyDataBins(): number {
+        return 0;
+    }
+
     private readonly canvas: RefObject<HTMLCanvasElement>;
 
     protected constructor(props: IAbstractVisualiserProps) {

@@ -1,5 +1,6 @@
 import * as React from 'react';
-import {ITrackType} from "../visualiser/data/tracks";
+
+import {ITrackType} from "../visualiser/data/tracksRepository";
 
 import './TrackSelection.css';
 
@@ -16,21 +17,26 @@ class TrackSelection extends React.PureComponent<ITrackSelectionProps, {}> {
         super(props);
 
         this.trackSelected = this.trackSelected.bind(this);
+        this.trackStarred = this.trackStarred.bind(this);
     }
 
     public render() {
         return (
-            <div className="track-selection"
-                 onClick={this.trackSelected}>
-                <div className="playing-indicator">
-                    {this.props.isSelected &&
-                            '▶'}
+            <div className={'track-selection' + (this.props.isSelected ? ' playing' : '')}>
+                <div className="track-details"
+                     onClick={this.trackSelected}>
+                    <div className="playing-status">
+                        ▶ {/* TODO Paused icon if paused, loader if loading, etc */}
+                    </div>
+                    <div className="track-name">
+                        {this.props.track.name}
+                    </div>
                 </div>
-                <div className="track-name">
-                    {this.props.track.name}
-                </div>
-                <div className="star-button">
-                    {this.props.isStarred ? '★' : '☆'}
+                <div className="track-actions">
+                    <div className="star-button"
+                         onClick={this.trackStarred}>
+                        {this.props.isStarred ? '★' : '☆'}
+                    </div>
                 </div>
             </div>
         );
@@ -38,6 +44,11 @@ class TrackSelection extends React.PureComponent<ITrackSelectionProps, {}> {
 
     private trackSelected(): void {
         this.props.trackSelectedCallback(this.props.track);
+    }
+
+    private trackStarred(e: React.MouseEvent<HTMLDivElement>): void {
+        e.stopPropagation();
+        this.props.trackStarredCallback(this.props.track);
     }
 }
 

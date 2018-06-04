@@ -5,7 +5,7 @@ import VisualiserBars from "../components/VisualiserBars";
 
 export interface IVisualiserType {
     component: typeof AbstractVisualiser,
-    name: string
+    name: string,
 }
 
 const visualisers: IVisualiserType[] = [

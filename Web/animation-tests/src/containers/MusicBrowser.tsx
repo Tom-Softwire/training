@@ -4,28 +4,31 @@ import './MusicBrowser.css';
 
 import Header from "../components/Header";
 import TrackSelection from "../components/musicBrowser/TrackSelection";
-import tracks, {ITrackType} from '../components/visualiser/data/tracks';
+import PersistentlyStarrableTrackStore from "../components/visualiser/data/StarrableTrackStore";
+import {default as allTracks, ITrackType} from "../components/visualiser/data/tracksRepository";
 import visualisers, {IVisualiserType} from "../components/visualiser/data/visualisers";
 import VisualisedAudioElement from "../components/visualiser/VisualisedAudioElement";
 
 interface IMusicBrowserState {
-    currentTrack: ITrackType | null
-    visualiser: IVisualiserType
+    currentTrackId: number | null,
+    shouldPlay: boolean,
+    trackStore: PersistentlyStarrableTrackStore,
+    visualiser: IVisualiserType,
 }
-
-// TODO Implement a persistent, redux-based store for the user's starred tracks
 
 class MusicBrowser extends React.PureComponent<{}, IMusicBrowserState> {
     public constructor() {
         super({});
         
         this.state = {
-            currentTrack: null,
+            currentTrackId: null,
+            shouldPlay: false,
+            trackStore: new PersistentlyStarrableTrackStore(allTracks),
             visualiser: visualisers[0]
         };
 
-        this.trackSelected = this.trackSelected.bind(this);
-        this.trackStarred = this.trackStarred.bind(this);
+        this.trackClicked = this.trackClicked.bind(this);
+        this.trackStarClicked = this.trackStarClicked.bind(this);
     }
     
     public render() {
@@ -34,7 +37,7 @@ class MusicBrowser extends React.PureComponent<{}, IMusicBrowserState> {
                 <Header pageName="Music Browser" />
                 <main>
                     <div className="music-browser">
-                        {this.renderBrowser()}
+                        {this.renderTrackBrowser()}
                         {this.renderNowPlaying()}
                     </div>
                 </main>
@@ -42,7 +45,7 @@ class MusicBrowser extends React.PureComponent<{}, IMusicBrowserState> {
         );
     }
 
-    private renderBrowser() {
+    private renderTrackBrowser() {
         return (
             <div className="browser">
                 <h4>Music Library</h4>
@@ -55,37 +58,41 @@ class MusicBrowser extends React.PureComponent<{}, IMusicBrowserState> {
     }
 
     private renderTrackSelections() {
-        return tracks.map((track: ITrackType) => {
-            return <TrackSelection key={track.name}
-                                   isSelected={this.state.currentTrack === track}
-                                   isStarred={false} // TODO Determing from the redux store ingestion
+        return this.state.trackStore.getAllAsArray().map((track: ITrackType) => {
+            return <TrackSelection key={track.id}
+                                   isSelected={this.state.currentTrackId === track.id}
+                                   isStarred={this.state.trackStore.isTrackWithIdStarred(track.id)}
                                    track={track}
-                                   trackStarredCallback={this.trackStarred}
-                                   trackSelectedCallback={this.trackSelected}/>;
+                                   trackStarredCallback={this.trackStarClicked}
+                                   trackSelectedCallback={this.trackClicked}/>;
         });
     }
 
     private renderNowPlaying() {
         return (
             <>
-                {this.state.currentTrack !== null &&
+                {this.state.currentTrackId !== null &&
                 <div className="player">
-                    <h5>{this.state.currentTrack.name}</h5>
-                    <VisualisedAudioElement track={this.state.currentTrack}
-                                            visualiser={this.state.visualiser}/>
+                    <h5>{this.state.trackStore.getTrackById(this.state.currentTrackId).name}</h5>
+                    <VisualisedAudioElement track={this.state.trackStore.getTrackById(this.state.currentTrackId)}
+                                            visualiser={this.state.visualiser}
+                                            shouldPlay={this.state.shouldPlay}/>
                 </div>
                 }
             </>
         );
     }
 
-    private trackSelected(track: ITrackType): void {
-        this.setState({currentTrack: track});
+    private trackClicked(track: ITrackType): void {
+        this.setState({currentTrackId: track.id, shouldPlay: true});
     }
 
-    private trackStarred(track: ITrackType): void {
-        // TODO dispatch redux action
-        return;
+    private trackStarClicked(track: ITrackType): void {
+        this.toggleTrackStar(track);
+    }
+
+    private toggleTrackStar(track: ITrackType): void {
+        this.setState({trackStore: this.state.trackStore.withStarToggledForTrackWithId(track.id)});
     }
 }
 
