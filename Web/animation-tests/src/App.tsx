@@ -3,7 +3,6 @@ import {Route, Switch} from "react-router";
 
 import './App.css';
 
-import Header from "./components/Header";
 import AnimationDemoHome from "./containers/AnimationDemoHome";
 import AnimationDemoPage from "./containers/AnimationDemoPage";
 import Home from "./containers/Home";
@@ -15,7 +14,6 @@ class App extends React.Component {
     public render() {
         return (
             <div className="App">
-                <Header />
                 <Switch>
                     <Route exact={true} path="/" component={Home} />
 

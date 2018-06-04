@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import './MusicBrowser.css';
 
+import Header from "../components/Header";
 import TrackSelection from "../components/musicBrowser/TrackSelection";
 import tracks, {ITrackType} from '../components/visualiser/data/tracks';
 import visualisers, {IVisualiserType} from "../components/visualiser/data/visualisers";
@@ -29,10 +30,15 @@ class MusicBrowser extends React.PureComponent<{}, IMusicBrowserState> {
     
     public render() {
         return (
-            <div className="music-browser">
-                {this.renderBrowser()}
-                {this.renderNowPlaying()}
-            </div>
+            <>
+                <Header pageName="Music Browser" />
+                <main>
+                    <div className="music-browser">
+                        {this.renderBrowser()}
+                        {this.renderNowPlaying()}
+                    </div>
+                </main>
+            </>
         );
     }
 

@@ -4,6 +4,7 @@ import AnimationDemoNotFound from "./AnimationNotFound";
 
 import animationDemos from "../components/AnimationDemoDirectory";
 import AnimationDemo from "../components/animationsDemos/AbstractAnimationDemo";
+import Header from "../components/Header";
 
 interface IAnimationDemoPageRouteParams {
     animationName: string;
@@ -29,8 +30,10 @@ class AnimationDemoPage extends React.Component<IAnimationDemoPageProps, {}> {
 
         return (
             <>
-                {<p>{AnimationDemoType.displayName}</p>}
-                <AnimationDemoType autoplay={true} />
+                <Header pageName={AnimationDemoType.displayName} />
+                <main>
+                    <AnimationDemoType autoplay={true} />
+                </main>
             </>
         );
     }

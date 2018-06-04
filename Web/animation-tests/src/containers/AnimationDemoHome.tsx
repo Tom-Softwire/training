@@ -3,6 +3,7 @@ import {ReactElement} from "react";
 import {Link} from "react-router-dom";
 
 import animationDemos from "../components/AnimationDemoDirectory";
+import Header from "../components/Header";
 
 class AnimationDemoHome extends React.Component<{}, {}> {
     public render() {
@@ -19,10 +20,12 @@ class AnimationDemoHome extends React.Component<{}, {}> {
 
         return (
             <>
-                <h2>Animation Demos</h2>
-                <p>
-                    {animationLinks}
-                </p>
+                <Header pageName="Animation Demos" />
+                <main>
+                    <p>
+                        {animationLinks}
+                    </p>
+                </main>
             </>
         );
     }

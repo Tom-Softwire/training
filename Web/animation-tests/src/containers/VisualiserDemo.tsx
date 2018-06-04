@@ -6,6 +6,7 @@ import VisualisedAudioElement from "../components/visualiser/VisualisedAudioElem
 import {default as tracks, ITrackType} from "../components/visualiser/data/tracks";
 import {default as visualisers, IVisualiserType} from "../components/visualiser/data/visualisers";
 
+import Header from "../components/Header";
 import './VisualiserDemo.css';
 
 interface IVisualiserDemoState {
@@ -30,24 +31,27 @@ class VisualiserDemo extends React.PureComponent<{}, IVisualiserDemoState> {
     public render() {
         return (
             <>
-                <div className='playerWithVisualiser'>
-                    <h3>
-                        {this.state.track ?
-                            `Now playing: ${this.state.track.name}` :
-                            `No track selected`}
-                    </h3>
-                    <VisualisedAudioElement track={this.state.track}
-                                            visualiser={this.state.visualiser} />
-                </div>
-                <div>
-                    <h4>Visualiser</h4>
-                    {this.renderVisualiserTypeButtons()}
-                </div>
-                <div>
-                    <h4>Track</h4>
-                    {this.renderTrackButtons()}
-                </div>
-                <p>Music: http://www.purple-planet.com</p>
+                <Header pageName="Visualiser Demo" />
+                <main>
+                    <div className='playerWithVisualiser'>
+                        <h3>
+                            {this.state.track ?
+                                `Now playing: ${this.state.track.name}` :
+                                `No track selected`}
+                        </h3>
+                        <VisualisedAudioElement track={this.state.track}
+                                                visualiser={this.state.visualiser} />
+                    </div>
+                    <div>
+                        <h4>Visualiser</h4>
+                        {this.renderVisualiserTypeButtons()}
+                    </div>
+                    <div>
+                        <h4>Track</h4>
+                        {this.renderTrackButtons()}
+                    </div>
+                    <p>Music: http://www.purple-planet.com</p>
+                </main>
             </>
         );
     }
