@@ -1,0 +1,74 @@
+.track-selection {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    height: 4.24em;
+    border-top: 1px solid #eee;
+    padding: 0 2.62em;
+    cursor: pointer;
+    transition: background 100ms ease-in-out;
+
+    &:hover {
+        background: #f6f6f6;
+    }
+
+    &:last-of-type {
+        border-bottom: 1px solid #eee;
+    }
+
+    .playing-status {
+        display: flex;
+        align-items: center;
+        width: 30px;
+        opacity: 0;
+        transition: opacity 100ms ease-in-out;
+    }
+
+    .track-details {
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: stretch;
+
+        &:hover .playing-status {
+            opacity: 0.3;
+        }
+    }
+
+    &.playing .track-details .playing-status {
+        opacity: 1;
+    }
+
+    .track-name {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+        text-align: left;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .track-actions {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: stretch;
+    }
+
+    .star-button {
+         display: flex;
+         align-items: center;
+         padding: 0 1em;
+         font-size: 2em;
+         transition: background 100ms ease-in-out;
+
+        &:hover {
+            background: #ddd;
+            color: darkgoldenrod;
+        }
+     }
+
+}
