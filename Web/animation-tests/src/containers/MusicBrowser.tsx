@@ -58,10 +58,10 @@ class MusicBrowser extends React.PureComponent<{}, IMusicBrowserState> {
     }
 
     private renderTrackSelections() {
-        return this.state.trackStore.getAllAsArray().map((track: ITrackType) => {
+        return this.allTracks().map((track: ITrackType) => {
             return <TrackSelection key={track.id}
-                                   isSelected={this.state.currentTrackId === track.id}
-                                   isStarred={this.state.trackStore.isTrackWithIdStarred(track.id)}
+                                   isSelected={this.isTrackSelected(track)}
+                                   isStarred={this.isTrackStarred(track)}
                                    track={track}
                                    trackStarredCallback={this.trackStarClicked}
                                    trackSelectedCallback={this.trackClicked}/>;
@@ -71,16 +71,41 @@ class MusicBrowser extends React.PureComponent<{}, IMusicBrowserState> {
     private renderNowPlaying() {
         return (
             <>
-                {this.state.currentTrackId !== null &&
+                {this.hasACurrentTrack() &&
                 <div className="player">
-                    <h5>{this.state.trackStore.getTrackById(this.state.currentTrackId).name}</h5>
-                    <VisualisedAudioElement track={this.state.trackStore.getTrackById(this.state.currentTrackId)}
+                    <h5>{this.getCurrentTrack().name}</h5>
+                    <VisualisedAudioElement track={this.getCurrentTrack()}
                                             visualiser={this.state.visualiser}
                                             shouldPlay={this.state.shouldPlay}/>
                 </div>
                 }
             </>
         );
+    }
+
+    private allTracks(): ITrackType[] {
+        return this.state.trackStore.getAllAsArray();
+    }
+
+    private hasACurrentTrack(): boolean {
+        return this.state.currentTrackId !== null &&
+            this.state.trackStore.hasTrackById(this.state.currentTrackId);
+    }
+
+    private getCurrentTrack(): ITrackType {
+        const currentTrackId = this.state.currentTrackId;
+        if (currentTrackId === null) {
+            throw new Error('No current track.');
+        }
+        return this.state.trackStore.getTrackById(currentTrackId);
+    }
+
+    private isTrackSelected(track: ITrackType): boolean {
+        return this.state.currentTrackId === track.id;
+    }
+
+    private isTrackStarred(track: ITrackType): boolean {
+        return this.state.trackStore.isTrackWithIdStarred(track.id);
     }
 
     private trackClicked(track: ITrackType): void {

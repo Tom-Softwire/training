@@ -3,8 +3,6 @@ import TrackStore from "./TrackStore";
 
 export type IStarrableTrackType = ITrackType & {isStarred: boolean};
 
-// TODO Redux would make sense!..
-
 class PersistentlyStarrableTrackStore extends TrackStore<IStarrableTrackType> {
     public constructor(tracks: ITrackType[]) {
         super();
@@ -16,6 +14,7 @@ class PersistentlyStarrableTrackStore extends TrackStore<IStarrableTrackType> {
         return this.getTrackById(id).isStarred;
     }
 
+    // TODO Replace this function with proper use of Redux.
     public withStarToggledForTrackWithId(id: number): PersistentlyStarrableTrackStore {
         const clone = this.clone();
         clone.setPersistedValueOfStarredStatus(id, !this.isTrackWithIdStarred(id));
