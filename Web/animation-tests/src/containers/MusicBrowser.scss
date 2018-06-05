@@ -1,3 +1,5 @@
+$nowPlayingWidth: 250px;
+
 .music-browser {
     display: flex;
     flex-direction: row;
@@ -5,25 +7,49 @@
     width: 750px;
     margin: 0 auto;
     max-width: 100%;
+
+    .browser {
+        max-width: 100%;
+        flex: 1 0 250px;
+    }
+
+    .player {
+        max-width: 100%;
+        width: $nowPlayingWidth;
+        flex: 0 0 0;
+        overflow: hidden;
+        transition: flex-basis 150ms ease-in-out;
+
+        .track-name {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+
+    &.has-track .player {
+        flex-basis: $nowPlayingWidth;
+    }
+
+    .list {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+    }
+
+    .list-attribution {
+        color: #555;
+        font-size: 0.8em;
+    }
 }
 
-.music-browser .browser {
-    max-width: 100%;
-    flex: 1 0 250px;
-}
+@media (max-width: 600px) {
+    .music-browser {
+        flex-direction: column-reverse;
+        align-items: center;
 
-.music-browser .player {
-    max-width: 100%;
-    flex: 1 0 250px;
-}
-
-.music-browser .list {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-}
-
-.music-browser .list-attribution {
-    color: #555;
-    font-size: 0.8em;
+        .browser {
+            width: 100%;
+        }
+    }
 }

@@ -1,3 +1,4 @@
+import {boolToString, stringToBool} from "../../../util/StringUtils";
 import {ITrackType} from "./tracksRepository";
 import TrackStore from "./TrackStore";
 
@@ -14,7 +15,7 @@ class PersistentlyStarrableTrackStore extends TrackStore<IStarrableTrackType> {
         return this.getTrackById(id).isStarred;
     }
 
-    // TODO Replace this function with proper use of Redux.
+    // TODO Is there a way to refactor this without the unnecessary boilerplate of Redux?
     public withStarToggledForTrackWithId(id: number): PersistentlyStarrableTrackStore {
         const clone = this.clone();
         clone.setPersistedValueOfStarredStatus(id, !this.isTrackWithIdStarred(id));
@@ -33,11 +34,18 @@ class PersistentlyStarrableTrackStore extends TrackStore<IStarrableTrackType> {
     }
 
     private getPersistedValueOfStarredStatus(id: number): boolean {
-        return JSON.parse(localStorage.getItem(`tracks[${id}].isStarred`) || 'false');
+        try {
+            return stringToBool(localStorage.getItem(
+                `tracks[${id}].isStarred`) || 'false');
+        } catch (e) {
+            return false;
+        }
     }
 
     private setPersistedValueOfStarredStatus(id: number, isStarred: boolean): void {
-        localStorage.setItem(`tracks[${id}].isStarred`, '' + isStarred);
+        localStorage.setItem(
+            `tracks[${id}].isStarred`,
+            boolToString(isStarred));
     }
 }
 

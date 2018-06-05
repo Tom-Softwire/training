@@ -20,6 +20,11 @@ interface IVisualisedAudioElementState {
     normalisedFrequencyData: INormalisedFrequencyData
 }
 
+// TODO move some of this logic into the visualiser, so that the audio element potion can be easily decoupled.
+// This class should simply connect the resulting two modules.
+// Visualiser should have a public interface to 'connect' to a source of IRawFrequencyData (what's currently referred to as a 'frequency analyser'?).
+// Visualiser sets up its own frequency normaliser.
+
 class VisualisedAudioElement extends React.PureComponent<IVisualisedAudioElementProps, IVisualisedAudioElementState> {
     private readonly audioContext: AudioContext;
     private readonly audioElement: RefObject<HTMLAudioElement>;
@@ -74,11 +79,11 @@ class VisualisedAudioElement extends React.PureComponent<IVisualisedAudioElement
     }
 
     private setUp() {
-        this.frequencyAnalyser = this.setUpFrequencyProcessor();
+        this.frequencyAnalyser = this.setUpFrequencyAnalyser();
         this.frequencyAnalyser.start();
     }
 
-    private setUpFrequencyProcessor(): FrequencyAnalyser {
+    private setUpFrequencyAnalyser(): FrequencyAnalyser {
         const frequencyProcessor = new FrequencyAnalyser(this.audioContext);
 
         frequencyProcessor.setAudioSource(this.getAudioElement());
