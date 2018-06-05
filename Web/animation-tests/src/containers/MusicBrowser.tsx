@@ -36,7 +36,7 @@ class MusicBrowser extends React.PureComponent<{}, IMusicBrowserState> {
             <>
                 <Header pageName="Music Browser" />
                 <main>
-                    <div className="music-browser">
+                    <div className={'music-browser' + (this.hasACurrentTrack() ? ' has-track' : '')}>
                         {this.renderTrackBrowser()}
                         {this.renderNowPlaying()}
                     </div>
@@ -63,23 +63,23 @@ class MusicBrowser extends React.PureComponent<{}, IMusicBrowserState> {
                                    isSelected={this.isTrackSelected(track)}
                                    isStarred={this.isTrackStarred(track)}
                                    track={track}
-                                   trackStarredCallback={this.trackStarClicked}
+                                   trackStarToggleCallback={this.trackStarClicked}
                                    trackSelectedCallback={this.trackClicked}/>;
         });
     }
 
     private renderNowPlaying() {
         return (
-            <>
+            <div className="player">
                 {this.hasACurrentTrack() &&
-                <div className="player">
-                    <h5>{this.getCurrentTrack().name}</h5>
+                <>
+                    <h5 className="track-name">{this.getCurrentTrack().name}</h5>
                     <VisualisedAudioElement track={this.getCurrentTrack()}
                                             visualiser={this.state.visualiser}
                                             shouldPlay={this.state.shouldPlay}/>
-                </div>
+                </>
                 }
-            </>
+            </div>
         );
     }
 
@@ -117,6 +117,7 @@ class MusicBrowser extends React.PureComponent<{}, IMusicBrowserState> {
     }
 
     private toggleTrackStar(track: ITrackType): void {
+        // TODO Convert to Redux action dispatch.
         this.setState({trackStore: this.state.trackStore.withStarToggledForTrackWithId(track.id)});
     }
 }
