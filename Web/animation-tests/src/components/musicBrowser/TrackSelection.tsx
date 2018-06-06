@@ -2,14 +2,16 @@ import * as React from 'react';
 
 import {ITrackType} from "../visualiser/data/tracksRepository";
 
+import LoadingAnimation from "../LoadingAnimation";
 import './TrackSelection.css';
+import {TrackStatus} from "./util/TrackStatus";
 
 interface ITrackSelectionProps {
-    isSelected: boolean,
     isStarred: boolean,
     track: ITrackType,
-    trackStarToggleCallback: (track: ITrackType) => void,
     trackSelectedCallback: (track: ITrackType) => void,
+    trackStarToggleCallback: (track: ITrackType) => void,
+    trackStatus: TrackStatus,
 }
 
 class TrackSelection extends React.PureComponent<ITrackSelectionProps, {}> {
@@ -21,12 +23,16 @@ class TrackSelection extends React.PureComponent<ITrackSelectionProps, {}> {
     }
 
     public render() {
+        const isNotCurrentTrack = this.props.trackStatus === TrackStatus.NotCurrent;
+
         return (
-            <div className={'track-selection' + (this.props.isSelected ? ' playing' : '')}>
+            <div className={'track-selection' + (isNotCurrentTrack ? '' : ' playing')}>
                 <div className="track-details"
                      onClick={this.trackSelected}>
                     <div className="playing-status">
-                        {this.renderPlayingStatus()}
+                        {isNotCurrentTrack ?
+                            this.renderNonCurrentTrackHoverIcon() :
+                            this.renderCurrentTrackStatus()}
                     </div>
                     <div className="track-name">
                         {this.props.track.name}
@@ -51,13 +57,48 @@ class TrackSelection extends React.PureComponent<ITrackSelectionProps, {}> {
         this.props.trackStarToggleCallback(this.props.track);
     }
 
-    private renderPlayingStatus(): any {
-        // TODO Paused icon if paused, loader if loading, etc
+    private renderNonCurrentTrackHoverIcon(): any {
+        return (
+            <div className="hover-icon">
+                {this.renderPlayIcon()}
+            </div>
+        )
+    }
+
+    private renderPlayIcon(): any {
         return (
             <svg version="1.1" viewBox="0 0 32 32" x="0" y="0" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
                 <path d="M0 0 L 32 16 L 0 32 Z" />
             </svg>
         );
+    }
+
+    private renderCurrentTrackStatus(): any {
+        switch (this.props.trackStatus) {
+            case TrackStatus.Playing:
+                return this.renderPlayingStatusPlaying();
+            case TrackStatus.Paused:
+                return this.renderPlayingStatusPaused();
+            case TrackStatus.Loading:
+                return this.renderPlayingStatusLoading();
+        }
+    }
+
+    private renderPlayingStatusPlaying(): any {
+        return this.renderPlayIcon();
+    }
+
+    private renderPlayingStatusPaused(): any {
+        return (
+            <svg version="1.1" viewBox="0 0 32 32" x="0" y="0" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 0 H 12 V 32 H 4 Z" />
+                <path d="M20 0 H 28 V 32 H 20 Z" />
+            </svg>
+        );
+    }
+
+    private renderPlayingStatusLoading(): any {
+        return <LoadingAnimation />
     }
 
     private renderStarredStatus(): any {

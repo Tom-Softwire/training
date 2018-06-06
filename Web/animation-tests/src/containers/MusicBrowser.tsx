@@ -4,6 +4,7 @@ import './MusicBrowser.css';
 
 import Header from "../components/Header";
 import TrackSelection from "../components/musicBrowser/TrackSelection";
+import {TrackStatus} from "../components/musicBrowser/util/TrackStatus";
 import PersistentlyStarrableTrackStore from "../components/visualiser/data/StarrableTrackStore";
 import {default as allTracks, ITrackType} from "../components/visualiser/data/tracksRepository";
 import visualisers, {IVisualiserType} from "../components/visualiser/data/visualisers";
@@ -11,6 +12,7 @@ import VisualisedAudioElement from "../components/visualiser/VisualisedAudioElem
 
 interface IMusicBrowserState {
     currentTrackId: number | null,
+    currentTrackStatus: TrackStatus,
     shouldPlay: boolean,
     trackStore: PersistentlyStarrableTrackStore,
     visualiser: IVisualiserType,
@@ -22,6 +24,7 @@ class MusicBrowser extends React.PureComponent<{}, IMusicBrowserState> {
         
         this.state = {
             currentTrackId: null,
+            currentTrackStatus: TrackStatus.NotCurrent,
             shouldPlay: false,
             trackStore: new PersistentlyStarrableTrackStore(allTracks),
             visualiser: visualisers[0]
@@ -29,6 +32,7 @@ class MusicBrowser extends React.PureComponent<{}, IMusicBrowserState> {
 
         this.trackClicked = this.trackClicked.bind(this);
         this.trackStarClicked = this.trackStarClicked.bind(this);
+        this.currentTrackStatusUpdated = this.currentTrackStatusUpdated.bind(this);
     }
     
     public render() {
@@ -60,11 +64,11 @@ class MusicBrowser extends React.PureComponent<{}, IMusicBrowserState> {
     private renderTrackSelections() {
         return this.allTracks().map((track: ITrackType) => {
             return <TrackSelection key={track.id}
-                                   isSelected={this.isTrackSelected(track)}
                                    isStarred={this.isTrackStarred(track)}
                                    track={track}
-                                   trackStarToggleCallback={this.trackStarClicked}
-                                   trackSelectedCallback={this.trackClicked}/>;
+                                   trackSelectedCallback={this.trackClicked}
+                                   trackStatus={this.isTrackSelected(track) ? this.state.currentTrackStatus : TrackStatus.NotCurrent}
+                                   trackStarToggleCallback={this.trackStarClicked}/>;
         });
     }
 
@@ -74,9 +78,10 @@ class MusicBrowser extends React.PureComponent<{}, IMusicBrowserState> {
                 {this.hasACurrentTrack() &&
                 <>
                     <h5 className="track-name">{this.getCurrentTrack().name}</h5>
-                    <VisualisedAudioElement track={this.getCurrentTrack()}
-                                            visualiser={this.state.visualiser}
-                                            shouldPlay={this.state.shouldPlay}/>
+                    <VisualisedAudioElement shouldPlay={this.state.shouldPlay}
+                                            track={this.getCurrentTrack()}
+                                            trackStatusUpdateCallback={this.currentTrackStatusUpdated}
+                                            visualiser={this.state.visualiser}/>
                 </>
                 }
             </div>
@@ -106,6 +111,10 @@ class MusicBrowser extends React.PureComponent<{}, IMusicBrowserState> {
 
     private isTrackStarred(track: ITrackType): boolean {
         return this.state.trackStore.isTrackWithIdStarred(track.id);
+    }
+
+    private currentTrackStatusUpdated(status: TrackStatus): void {
+        this.setState({currentTrackStatus: status});
     }
 
     private trackClicked(track: ITrackType): void {

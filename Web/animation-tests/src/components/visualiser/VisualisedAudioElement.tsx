@@ -3,6 +3,7 @@ import {RefObject} from "react";
 
 import './VisualisedAudioElement.css';
 
+import {TrackStatus} from "../musicBrowser/util/TrackStatus";
 import {ITrackType} from "./data/tracksRepository";
 import {IVisualiserType} from "./data/visualisers";
 import FrequencyAnalyser from "./util/FrequencyAnalyser";
@@ -12,21 +13,17 @@ export type IRawFrequencyData = Uint8Array;
 export type INormalisedFrequencyData = Uint8Array;
 
 interface IVisualisedAudioElementProps {
-    shouldPlay: boolean,
-    track: ITrackType | null,
+    trackStatusUpdateCallback?: (status: TrackStatus) => void,
+    shouldPlay?: boolean,
+    track?: ITrackType,
     visualiser: IVisualiserType,
 }
 interface IVisualisedAudioElementState {
     normalisedFrequencyData: INormalisedFrequencyData
 }
 
-// TODO move some of this logic into the visualiser, so that the audio element potion can be easily decoupled.
-// This class should simply connect the resulting two modules.
-// Visualiser should have a public interface to 'connect' to a source of IRawFrequencyData (what's currently referred to as a 'frequency analyser'?).
-// Visualiser sets up its own frequency normaliser.
-
-class VisualisedAudioElement extends React.PureComponent<IVisualisedAudioElementProps, IVisualisedAudioElementState> {
-    private readonly audioContext: AudioContext;
+class VisualisedAudioElement extends React.Component<IVisualisedAudioElementProps, IVisualisedAudioElementState> {
+    private audioContext: AudioContext;
     private readonly audioElement: RefObject<HTMLAudioElement>;
 
     private frequencyAnalyser: FrequencyAnalyser;
@@ -34,12 +31,15 @@ class VisualisedAudioElement extends React.PureComponent<IVisualisedAudioElement
     constructor(props: IVisualisedAudioElementProps) {
         super(props);
 
-        this.audioContext = this.createAudioContext();
+        this.setUpAudioContext();
         this.audioElement = React.createRef<HTMLAudioElement>();
 
         this.state = {
             normalisedFrequencyData: new Uint8Array(0)
-        }
+        };
+
+        this.playingCallback = this.playingCallback.bind(this);
+        this.pausedCallback = this.pausedCallback.bind(this);
     }
 
     public componentDidMount() {
@@ -50,24 +50,56 @@ class VisualisedAudioElement extends React.PureComponent<IVisualisedAudioElement
         }
     }
 
+    public shouldComponentUpdate(nextProps: IVisualisedAudioElementProps) {
+        // NOTE This approach isn't great, since it assumes certain behaviours about the workings of <audio>, and the logic here is misplaced.
+        // TODO Wrap the audio element to make behaviour predictable or check <audio> spec in detail.
+        // TODO This also doesn't work well when shouldPlay is false.
+        if (this.isTrackDistinctFromCurrentTrack(nextProps.track)) {
+            this.dispatchTrackStatus(TrackStatus.Loading);
+        }
+        return true; // re-render
+    }
+
     public componentWillUnmount() {
         this.frequencyAnalyser.stop();
     }
 
     public render() {
+        return (
+            <div className="visualised-audio-element">
+                {this.renderVisualiser()}
+                {this.renderAudioElement()}
+            </div>
+        );
+    }
+
+    public renderVisualiser() {
         const VisualiserComponent = this.props.visualiser.component;
 
         return (
-            <div className="visualised-audio-element">
-                <VisualiserComponent data={this.state.normalisedFrequencyData} width={250} height={154} />
+            <VisualiserComponent data={this.state.normalisedFrequencyData} width={250} height={154} />
+        );
+    }
+
+    public renderAudioElement() {
+        return (
                 <audio ref={this.audioElement}
                        controls={true}
                        src={this.props.track ? this.props.track.filename : ''}
-                       autoPlay={this.props.shouldPlay}>
+                       autoPlay={this.props.shouldPlay || false}
+                       onPlay={this.playingCallback}
+                       onPause={this.pausedCallback}>
                     No support!
                 </audio>
-            </div>
         );
+    }
+
+    private isTrackDistinctFromCurrentTrack(nextTrack?: ITrackType): boolean {
+        return (nextTrack !== undefined && (!this.props.track || (nextTrack.id !== this.props.track.id)));
+    }
+
+    private setUpAudioContext(): void {
+        this.audioContext = this.createAudioContext();
     }
 
     private createAudioContext(): AudioContext {
@@ -81,15 +113,17 @@ class VisualisedAudioElement extends React.PureComponent<IVisualisedAudioElement
     private setUp() {
         this.frequencyAnalyser = this.setUpFrequencyAnalyser();
         this.frequencyAnalyser.start();
+        this.getAudioElement().load();
+        this.dispatchTrackStatus(TrackStatus.Loading);
     }
 
     private setUpFrequencyAnalyser(): FrequencyAnalyser {
-        const frequencyProcessor = new FrequencyAnalyser(this.audioContext);
+        const frequencyAnalyser = new FrequencyAnalyser(this.audioContext);
 
-        frequencyProcessor.setAudioSource(this.getAudioElement());
-        frequencyProcessor.setFrequencyDataChangedCallback(this.frequencyDataChanged.bind(this));
+        frequencyAnalyser.setAudioSource(this.getAudioElement());
+        frequencyAnalyser.setFrequencyDataChangedCallback(this.frequencyDataChanged.bind(this));
 
-        return frequencyProcessor;
+        return frequencyAnalyser;
     }
 
     private getAudioElement(): HTMLAudioElement {
@@ -115,6 +149,20 @@ class VisualisedAudioElement extends React.PureComponent<IVisualisedAudioElement
         normaliser.setTargetNumberOfBins(this.props.visualiser.component.minNumberOfFrequencyDataBins);
 
         return normaliser.generateNormalisedData();
+    }
+
+    private playingCallback() {
+        this.dispatchTrackStatus(TrackStatus.Playing);
+    }
+
+    private pausedCallback() {
+        this.dispatchTrackStatus(TrackStatus.Paused);
+    }
+
+    private dispatchTrackStatus(status: TrackStatus): void {
+        if (this.props.trackStatusUpdateCallback) {
+            this.props.trackStatusUpdateCallback(status);
+        }
     }
 }
 

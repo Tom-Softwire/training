@@ -20,8 +20,7 @@
     .playing-status {
         display: flex;
         align-items: center;
-        opacity: 0;
-        transition: opacity 100ms ease-in-out;
+        width: 1em;
         fill: black;
         padding: 0 0.5em;
 
@@ -38,13 +37,15 @@
         flex-wrap: nowrap;
         align-items: stretch;
 
-        &:hover .playing-status {
+        .hover-icon {
+            display: flex;
+            opacity: 0;
+            transition: opacity 100ms ease-in-out;
+        }
+
+        &:hover .hover-icon {
             opacity: 0.3;
         }
-    }
-
-    &.playing .track-details .playing-status {
-        opacity: 1;
     }
 
     .track-name {

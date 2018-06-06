@@ -12,7 +12,7 @@ import './VisualiserDemo.css';
 
 interface IVisualiserDemoState {
     visualiser: IVisualiserType,
-    track: ITrackType | null,
+    track?: ITrackType,
 }
 
 class VisualiserDemo extends React.PureComponent<{}, IVisualiserDemoState> {
@@ -24,7 +24,6 @@ class VisualiserDemo extends React.PureComponent<{}, IVisualiserDemoState> {
         this.trackStore = new BasicTrackStore(allTracks);
 
         this.state = {
-            track: null,
             visualiser: visualisers[0],
         };
 
