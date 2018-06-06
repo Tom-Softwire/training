@@ -4,6 +4,8 @@ export interface ITrackType {
     name: string
 }
 
+export type IStarrableTrackType = ITrackType & {isStarred: boolean};
+
 const allTracks: ITrackType[] = [
     {
         filename: '/tracks/Playdate.wav',

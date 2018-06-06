@@ -2,28 +2,31 @@ import * as React from 'react';
 
 import './MusicBrowser.css';
 
+import {connect} from "react-redux";
 import Header from "../components/Header";
 import TrackSelection from "../components/musicBrowser/TrackSelection";
-import PersistentlyStarrableTrackStore from "../components/visualiser/data/StarrableTrackStore";
-import {default as allTracks, ITrackType} from "../components/visualiser/data/tracksRepository";
+import {ITrackType} from "../components/visualiser/data/tracksRepository";
 import visualisers, {IVisualiserType} from "../components/visualiser/data/visualisers";
 import VisualisedAudioElement from "../components/visualiser/VisualisedAudioElement";
+import {IAppState, IDispatchProps} from "../store";
+import {toggleTrackStar} from "../store/music/actions";
+import {IMusicAction, IMusicState} from "../store/music/types";
 
 interface IMusicBrowserState {
     currentTrackId: number | null,
     shouldPlay: boolean,
-    trackStore: PersistentlyStarrableTrackStore,
     visualiser: IVisualiserType,
 }
 
-class MusicBrowser extends React.PureComponent<{}, IMusicBrowserState> {
-    public constructor() {
-        super({});
+type IMusicBrowserProps = IDispatchProps<IMusicAction> & IMusicState;
+
+class MusicBrowser extends React.PureComponent<IMusicBrowserProps, IMusicBrowserState> {
+    public constructor(props: IMusicBrowserProps) {
+        super(props);
         
         this.state = {
             currentTrackId: null,
             shouldPlay: false,
-            trackStore: new PersistentlyStarrableTrackStore(allTracks),
             visualiser: visualisers[0]
         };
 
@@ -58,7 +61,7 @@ class MusicBrowser extends React.PureComponent<{}, IMusicBrowserState> {
     }
 
     private renderTrackSelections() {
-        return this.allTracks().map((track: ITrackType) => {
+        return this.props.allTracks.map((track: ITrackType) => {
             return <TrackSelection key={track.id}
                                    isSelected={this.isTrackSelected(track)}
                                    isStarred={this.isTrackStarred(track)}
@@ -83,13 +86,9 @@ class MusicBrowser extends React.PureComponent<{}, IMusicBrowserState> {
         );
     }
 
-    private allTracks(): ITrackType[] {
-        return this.state.trackStore.getAllAsArray();
-    }
-
     private hasACurrentTrack(): boolean {
         return this.state.currentTrackId !== null &&
-            this.state.trackStore.hasTrackById(this.state.currentTrackId);
+            this.props.allTracks[this.state.currentTrackId] !== undefined;
     }
 
     private getCurrentTrack(): ITrackType {
@@ -97,7 +96,7 @@ class MusicBrowser extends React.PureComponent<{}, IMusicBrowserState> {
         if (currentTrackId === null) {
             throw new Error('No current track.');
         }
-        return this.state.trackStore.getTrackById(currentTrackId);
+        return this.props.allTracks[currentTrackId];
     }
 
     private isTrackSelected(track: ITrackType): boolean {
@@ -105,7 +104,7 @@ class MusicBrowser extends React.PureComponent<{}, IMusicBrowserState> {
     }
 
     private isTrackStarred(track: ITrackType): boolean {
-        return this.state.trackStore.isTrackWithIdStarred(track.id);
+        return this.props.allTracks[track.id].isStarred;
     }
 
     private trackClicked(track: ITrackType): void {
@@ -113,13 +112,11 @@ class MusicBrowser extends React.PureComponent<{}, IMusicBrowserState> {
     }
 
     private trackStarClicked(track: ITrackType): void {
-        this.toggleTrackStar(track);
-    }
-
-    private toggleTrackStar(track: ITrackType): void {
-        // TODO Convert to Redux action dispatch.
-        this.setState({trackStore: this.state.trackStore.withStarToggledForTrackWithId(track.id)});
+        this.props.dispatch(toggleTrackStar(track));
     }
 }
 
-export default MusicBrowser;
+
+const mapStateToProps = (state: IAppState) => state.music;
+
+export default connect(mapStateToProps)(MusicBrowser);
