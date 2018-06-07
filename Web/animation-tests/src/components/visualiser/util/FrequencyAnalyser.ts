@@ -44,6 +44,8 @@ class FrequencyAnalyser {
     private createAnalyserNodeFromContext(audioContext: AudioContext): AnalyserNode {
         const analyser = audioContext.createAnalyser();
 
+        analyser.maxDecibels = -20;
+        analyser.minDecibels = -90;
         analyser.smoothingTimeConstant = 0.8;
         analyser.fftSize = 1024;
 
