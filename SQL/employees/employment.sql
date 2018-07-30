@@ -55,3 +55,16 @@ GO
 ALTER TABLE PensionFunds
 	ADD CONSTRAINT FK_PensionFunds_PensionProvider FOREIGN KEY (PensionProviderId) REFERENCES PensionProviders(Id)
 GO
+
+SET IDENTITY_INSERT PensionProviders ON
+INSERT INTO PensionProviders (Id, Name) VALUES (1, 'ABC Pensions Ltd')
+SET IDENTITY_INSERT PensionProviders OFF
+SET IDENTITY_INSERT PensionFunds ON
+INSERT INTO PensionFunds (Id, AmountContributed, PensionProviderId) VALUES (1, 0, 1)
+SET IDENTITY_INSERT PensionFunds OFF
+SET IDENTITY_INSERT JobPositions ON
+INSERT INTO JobPositions (Id, Title) VALUES (1, 'Developer')
+SET IDENTITY_INSERT JobPositions OFF
+SET IDENTITY_INSERT Employees ON
+INSERT INTO Employees (Id, FirstName, LastName, Age, Salary, JobPositionId, PensionFundId) VALUES (1, 'Kianna', 'Beltran', 27, 20000, 1, 1)
+SET IDENTITY_INSERT Employees OFF
