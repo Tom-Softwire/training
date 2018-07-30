@@ -68,3 +68,5 @@ SET IDENTITY_INSERT JobPositions OFF
 SET IDENTITY_INSERT Employees ON
 INSERT INTO Employees (Id, FirstName, LastName, Age, Salary, JobPositionId, PensionFundId) VALUES (1, 'Kianna', 'Beltran', 27, 20000, 1, 1)
 SET IDENTITY_INSERT Employees OFF
+
+SELECT CONCAT(FirstName, ' ', LastName) FROM Employees WHERE Age > 25
