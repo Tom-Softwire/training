@@ -70,3 +70,5 @@ INSERT INTO Employees (Id, FirstName, LastName, Age, Salary, JobPositionId, Pens
 SET IDENTITY_INSERT Employees OFF
 
 SELECT CONCAT(FirstName, ' ', LastName) FROM Employees WHERE Age > 25
+
+UPDATE PensionFunds SET AmountContributed = AmountContributed + (Employees.Salary/12)/20 FROM Employees WHERE Employees.PensionFundId = PensionFunds.Id
